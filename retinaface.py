@@ -467,7 +467,7 @@ class Retinaface(object):
             #   如果不是必须，可以换成cv2只显示英文。
             #--------------------------------------------------------------#
             old_image = cv2ImgAddText(old_image, name, b[0]+5 , b[3] - 25)
-        return old_image
+        return old_image,name
 
     def get_FPS(self, image, test_interval):
         #---------------------------------------------------#
