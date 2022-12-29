@@ -6,21 +6,14 @@ import torch
 import torch.nn as nn
 from PIL import Image, ImageDraw, ImageFont
 from tqdm import tqdm
+import os
 
 
 
 
-
+from leon_pre import *
 import sys
-if sys.platform == 'win32':
-    sys.path.append(r'D:\Leon-Coding\Leon_FC')
-else:
-    sys.path.append(r'/home/leonzion/Leon_Coding/Leon_FC')
-from leon_info import *
-from leon_os import *
-from leon_image import *
-print(leon_path_in(''))
-
+sys.path.append(os.path.dirname(__file__))
 
 
 
@@ -33,6 +26,7 @@ from utils.anchors import Anchors
 from utils.config import cfg_mnet, cfg_re50
 from utils.utils import (Alignment_1, compare_faces, letterbox_image,
                          preprocess_input)
+
 from utils.utils_bbox import (decode, decode_landm, non_max_suppression,
                               retinaface_correct_boxes)
 
@@ -58,12 +52,15 @@ def cv2ImgAddText(img, label, left, top, textColor=(255, 255, 255)):
 #   在更换facenet_model后，
 #   一定要注意重新编码人脸。
 #--------------------------------------#
+mid = os.path.join(os.path.dirname(__file__),'model_data','Retinaface_mobilenet0.25.pth')
+mid_ = os.path.join(os.path.dirname(__file__),'model_data','facenet_mobilenet.pth')
+
 class Retinaface(object):
     _defaults = {
         #----------------------------------------------------------------------#
         #   retinaface训练完的权值路径
         #----------------------------------------------------------------------#
-        "retinaface_model_path" : 'model_data/Retinaface_mobilenet0.25.pth',
+        "retinaface_model_path" : mid,
         #----------------------------------------------------------------------#
         #   retinaface所使用的主干网络，有mobilenet和resnet50
         #----------------------------------------------------------------------#
@@ -92,7 +89,7 @@ class Retinaface(object):
         #----------------------------------------------------------------------#
         #   facenet训练完的权值路径
         #----------------------------------------------------------------------#
-        "facenet_model_path"    : 'model_data/facenet_mobilenet.pth',
+        "facenet_model_path"    : mid_,
         #----------------------------------------------------------------------#
         #   facenet所使用的主干网络， mobilenet和inception_resnetv1
         #----------------------------------------------------------------------#
@@ -143,8 +140,10 @@ class Retinaface(object):
         self.generate()
 
         try:
-            self.known_face_encodings = np.load("model_data/{backbone}_face_encoding.npy".format(backbone=self.facenet_backbone))
-            self.known_face_names     = np.load("model_data/{backbone}_names.npy".format(backbone=self.facenet_backbone))
+            mid_1 = os.path.join(os.path.dirname(__file__),"model_data/{backbone}_face_encoding.npy".format(backbone=self.facenet_backbone))
+            mid_2 = os.path.join(os.path.dirname(__file__),"model_data/{backbone}_names.npy".format(backbone=self.facenet_backbone))
+            self.known_face_encodings = np.load(mid_1)
+            self.known_face_names     = np.load(mid_2)
         except:
             if not encoding:
                 print("载入已有人脸特征失败，请检查model_data下面是否生成了相关的人脸特征文件。")
@@ -286,9 +285,10 @@ class Retinaface(object):
 
                 face_encoding = self.facenet(crop_img)[0].cpu().numpy()
                 face_encodings.append(face_encoding)
-
-        np.save("model_data/{backbone}_face_encoding.npy".format(backbone=self.facenet_backbone),face_encodings)
-        np.save("model_data/{backbone}_names.npy".format(backbone=self.facenet_backbone),names)
+        mid_1 = os.path.join(os.path.dirname(__file__),"model_data/{backbone}_face_encoding.npy".format(backbone=self.facenet_backbone))
+        mid_2 = os.path.join(os.path.dirname(__file__),"model_data/{backbone}_names.npy".format(backbone=self.facenet_backbone))
+        np.save(mid_1,face_encodings)
+        np.save(mid_2,names)
 
     #---------------------------------------------------#
     #   检测图片

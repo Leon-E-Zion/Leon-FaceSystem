@@ -24,17 +24,17 @@ def register_insert():
     print(num)
     # 文件存储 - 此处注意传输过程中图像选用流式传输，基于二进制形式实现
     try:
-        os.mkdirs(os.path.join(os.getcwd(),'face_dataset'))
+        os.mkdirs(os.path.join(os.path.dirname(__file__),'face_dataset'))
     except:
         pass
-    img.save(os.path.join(os.getcwd(),'face_dataset','{}_{}.jpg'.format(name,num)))
+    img.save(os.path.join(os.path.dirname(__file__),'face_dataset','{}_{}.jpg'.format(name,num)))
     respose = {
         "opt_return": 'image saved'
     }
     return respose
     
 def embedding():
-    path = os.path.join(os.getcwd(),'encoding.py')
+    path = os.path.join(os.path.dirname(__file__),'encoding.py')
     os.system('python {}'.format(path))
     
     
@@ -50,8 +50,8 @@ import base64
 from flask import request
 from flask import Flask,jsonify
 import os
-
-net = get_model()
+from retinaface import Retinaface
+net = Retinaface()
 # 定义路由
 @app.route("/a", methods=['POST'])
 def get_frame():
@@ -60,9 +60,9 @@ def get_frame():
     img = upload_file.read()
     byte_stream = io.BytesIO(img)  
     img = Image.open(byte_stream) 
-    img.save(os.path.join(os.getcwd(),'tmp_1.jpg'))
+    img.save(os.path.join(os.path.dirname(__file__),'tmp_1.jpg'))
     # 检测用户
-    output = get_role(net,os.path.join(os.getcwd(),'tmp_1.jpg'))
+    output = get_role(net,os.path.join(os.path.dirname(__file__),'tmp_1.jpg'))
     respose = {
         "urls": str(output['output_name'])
     }
